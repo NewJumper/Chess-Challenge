@@ -7,19 +7,24 @@ public class MyBot : IChessBot {
 
     public Move Think(Board board, Timer timer) {
         Move[] moves = board.GetLegalMoves();
+        int highestValue = 0;
+        Move move = moves[0];
 
         Console.WriteLine(Evaluation(board));
 
-        foreach(Move move in moves) {
-            board.MakeMove(move);
+        foreach(Move possibleMove in moves) {
+            board.MakeMove(possibleMove);
             bool checkmate = board.IsInCheckmate();
-            board.UndoMove(move);
-            if(checkmate) return move;
+            board.UndoMove(possibleMove);
+            if(checkmate) return possibleMove;
 
-            PieceType piece = move.CapturePieceType;
-            if (piece != 0) return move;
+            int pieceValue = pieceValues[(int) possibleMove.CapturePieceType];
+            if (pieceValue > highestValue) {
+                highestValue = pieceValue;
+                move = possibleMove;
+            }
         }
-        return moves[0];
+        return move;
     }
 
     float Evaluation(Board board) {
