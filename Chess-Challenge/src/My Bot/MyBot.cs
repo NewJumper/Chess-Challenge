@@ -1,28 +1,27 @@
 ﻿using System;
 using ChessChallenge.API;
-using ChessChallenge.Example;
 
 public class MyBot : IChessBot {
     int[] pieceValues = { 0, 1, 3, 3, 5, 9, 100 };
 
     public Move Think(Board board, Timer timer) {
         Move[] moves = board.GetLegalMoves();
-        int highestValue = 0;
-        Move move = moves[0];
+        float favorableEval = 0;
+        Move move = moves[new Random().Next(moves.Length)];
 
-        Console.WriteLine(Evaluation(board));
-
-        foreach(Move possibleMove in moves) {
+        foreach (Move possibleMove in moves) {
             board.MakeMove(possibleMove);
             bool checkmate = board.IsInCheckmate();
             board.UndoMove(possibleMove);
-            if(checkmate) return possibleMove;
+            if (checkmate) return possibleMove;
 
-            int pieceValue = pieceValues[(int) possibleMove.CapturePieceType];
-            if (pieceValue > highestValue) {
-                highestValue = pieceValue;
+            board.MakeMove(possibleMove);
+            float eval = Evaluation(board);
+            if (eval > favorableEval) {
+                favorableEval = eval;
                 move = possibleMove;
             }
+            board.UndoMove(possibleMove);
         }
         return move;
     }
@@ -35,7 +34,7 @@ public class MyBot : IChessBot {
             if (GetPiece(board, i).IsWhite) evaluation += value;
             else evaluation -= value;
         }
-        return evaluation;
+        return board.IsWhiteToMove ? -evaluation : evaluation;
     }
 
     Piece GetPiece(Board board, int index) {
