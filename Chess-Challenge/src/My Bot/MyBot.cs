@@ -6,8 +6,8 @@ public class MyBot : IChessBot {
 
     public Move Think(Board board, Timer timer) {
         Move[] moves = board.GetLegalMoves();
-        float favorableEval = 0;
         Move move = moves[new Random().Next(moves.Length)];
+        float boardEval = Evaluation(board);
 
         foreach (Move possibleMove in moves) {
             board.MakeMove(possibleMove);
@@ -16,13 +16,17 @@ public class MyBot : IChessBot {
             if (checkmate) return possibleMove;
 
             board.MakeMove(possibleMove);
-            float eval = Evaluation(board);
-            if (eval > favorableEval) {
-                favorableEval = eval;
+            float eval = -Evaluation(board);
+            Console.WriteLine(eval + " ? " + boardEval);
+            if (eval > boardEval) {
+                boardEval = eval;
                 move = possibleMove;
             }
             board.UndoMove(possibleMove);
         }
+
+        Console.WriteLine(move);
+
         return move;
     }
 
@@ -34,7 +38,7 @@ public class MyBot : IChessBot {
             if (GetPiece(board, i).IsWhite) evaluation += value;
             else evaluation -= value;
         }
-        return board.IsWhiteToMove ? -evaluation : evaluation;
+        return board.IsWhiteToMove ? evaluation : -evaluation;
     }
 
     Piece GetPiece(Board board, int index) {
