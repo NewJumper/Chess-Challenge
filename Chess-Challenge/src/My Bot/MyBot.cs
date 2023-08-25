@@ -2,7 +2,7 @@
 using ChessChallenge.API;
 
 public class MyBot : IChessBot {
-    public static string pawnPoints = "0000000043300334202112023302203340433404065445605786687578999987";
+    public static string pawnPoints = "0000000045500554421331243336633344577544556886559999999999999999";
     int[] pieceValues = { 0, 1, 3, 3, 5, 9, 20 };
 
     public Move Think(Board board, Timer timer) {
