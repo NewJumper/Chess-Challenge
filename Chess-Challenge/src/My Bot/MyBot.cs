@@ -42,10 +42,10 @@ public class MyBot : IChessBot {
         for (int i = 0; i < 64; i++) {
             int pieceType = (int) GetPiece(board, i).PieceType;
             int value = pieceValues[pieceType];
-            if (white && pieceType == 1) {
-                value *= byte.Parse(pawnPoints[i] + "");
-            } else if (pieceType == 1) {
-                value *= byte.Parse(pawnPoints[63 - i] + "");
+            if (white) {
+                if (pieceType == 1) value *= byte.Parse(pawnPoints[i] + "");
+            } else {
+                if (pieceType == 1) value *= byte.Parse(pawnPoints[63 - i] + "");
             }
             if (GetPiece(board, i).IsWhite) evaluation += value;
             else evaluation -= value;

@@ -222,6 +222,16 @@ namespace ChessChallenge.Application
 
             // Reset state
             isDraggingPiece = false;
+
+            if (MenuUI.drawPawnScores) {
+                int counter = 0;
+                for(int j = -385; j <= 315; j += 100) {
+                    for(int i = -370; i <= 330; i += 100) {
+                        //Raylib.DrawText(MyBot.pawnPoints[counter] + "", i + 3, j + 3, 80, new Color(56, 21, 21, 255));
+                        Raylib.DrawText(MyBot.pawnPoints[counter++] + "", i, j, 80, new Color(235, 47, 47, 220));
+                    }
+                }
+            }
         }
 
         static void ForEachSquare(Action<int, int> action)

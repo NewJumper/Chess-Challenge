@@ -7,6 +7,9 @@ namespace ChessChallenge.Application
 {
     public static class MenuUI
     {
+        public static bool drawPawnScores;
+        public static bool drawKingScores;
+
         public static void DrawButtons(ChallengeController controller)
         {
             Vector2 buttonPos = UIHelper.Scale(new Vector2(260, 210));
@@ -68,6 +71,16 @@ namespace ChessChallenge.Application
             if (NextButtonInRow("Exit (ESC)", ref buttonPos, spacing, buttonSize))
             {
                 Environment.Exit(0);
+            }
+
+            buttonPos = UIHelper.Scale(new Vector2(1660, 210));
+            if (NextButtonInRow("Pawn Scores", ref buttonPos, spacing, buttonSize)) {
+                drawPawnScores = !drawPawnScores;
+                drawKingScores = false;
+            }
+            if (NextButtonInRow("King Scores", ref buttonPos, spacing, buttonSize)) {
+                drawKingScores = !drawKingScores;
+                drawPawnScores = false;
             }
 
             bool NextButtonInRow(string name, ref Vector2 pos, float spacingY, Vector2 size)
