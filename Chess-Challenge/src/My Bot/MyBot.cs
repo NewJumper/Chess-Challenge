@@ -11,12 +11,6 @@ public class MyBot : IChessBot {
         float boardEval = Evaluation(board, board.IsWhiteToMove); // get board evaluation before the bot makes a move
 
         foreach (Move possibleMove in moves) {
-            // check if checkmate, if so: make move
-            board.MakeMove(possibleMove);
-            bool checkmate = board.IsInCheckmate();
-            board.UndoMove(possibleMove);
-            if (checkmate) return possibleMove;
-
             // make a move, if that move improves eval: confirm move
             board.MakeMove(possibleMove);
             float eval = Evaluation(board, !board.IsWhiteToMove); // get board evaluation after bot makes the possible move (it is techinically opponents turn right now, thats why we undo the move later)
@@ -29,15 +23,16 @@ public class MyBot : IChessBot {
         }
 
         Console.WriteLine(move);
-        Console.WriteLine(Evaluation(board, board.IsWhiteToMove));
+        Console.WriteLine("previous: " + Evaluation(board, board.IsWhiteToMove));
         board.MakeMove(move);
-        Console.WriteLine(Evaluation(board, board.IsWhiteToMove));
+        Console.WriteLine("current: " + Evaluation(board, board.IsWhiteToMove));
         board.UndoMove(move);
 
         return move;
     }
 
     float Evaluation(Board board, bool white) {
+        if (board.IsInCheckmate()) return 10000;
         float evaluation = 0;
         for (int i = 0; i < 64; i++) {
             int pieceType = (int) GetPiece(board, i).PieceType;
