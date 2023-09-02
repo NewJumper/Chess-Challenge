@@ -1,34 +1,50 @@
 ﻿using System;
+using System.Collections.Generic;
 using ChessChallenge.API;
 
 public class MyBot : IChessBot {
     public static string pawnPoints = "0000000045500554421331243336633344577544556886559999999999999999";
     int[] pieceValues = { 0, 1, 3, 3, 5, 9, 20 };
+    List<Move> moves = new(3);
 
     public Move Think(Board board, Timer timer) {
-        bool white = board.IsWhiteToMove;
-        Move[] moves = board.GetLegalMoves();
-        Move move = moves[new Random().Next(moves.Length)];
-        int boardEval = Evaluation(board); // get board evaluation before the bot makes a move
+        minMax(board, 3, int.MinValue, int.MaxValue, board.IsWhiteToMove);
 
-        foreach (Move possibleMove in moves) {
-            // play possibleMove, then check if that move improves the bot's eval. if it does, set move = possibleMove
-            board.MakeMove(possibleMove);
-            int eval = Evaluation(board);
-            if (white && eval > boardEval) {
-                boardEval = eval;
-                move = possibleMove;
-            } else if (!white && eval < boardEval) {
-                boardEval = eval;
-                move = possibleMove;
-            }
-            board.UndoMove(possibleMove);
+        foreach(Move move1 in moves) {
+            Console.Write(move1.ToString().Replace("Move: ", "") + ", ");
         }
 
-        return move;
+        return moves[0];
     }
 
+    int minMax(Board board, int depth, int min, int max, bool white) {
+        if(depth == 0 || board.IsInCheckmate()) return Evaluation(board);
 
+        Move move = new();
+        int eval = white ? int.MinValue : int.MaxValue;
+        foreach (Move possibleMove in board.GetLegalMoves()) {
+            board.MakeMove(possibleMove);
+            int newEval = minMax(board, depth - 1, min, max, !white);
+
+            if (white && newEval > eval) {
+                eval = newEval;
+                move = possibleMove;
+            } else if (!white && newEval < eval) {
+                eval = newEval;
+                move = possibleMove;
+            }
+
+            //eval = white ? Math.Max(eval, newEval) : Math.Min(eval, newEval);
+
+            if (white) min = Math.Max(min, newEval);
+            else max = Math.Min(max, newEval);
+            board.UndoMove(possibleMove);
+            if (max <= min) break;
+        }
+
+        moves.Add(move);
+        return eval;
+    }
 
     int Evaluation(Board board) {
         if (board.IsInCheckmate()) return board.IsWhiteToMove ? -10000 : 10000; // if its checkmate, dont do any of the following checks
