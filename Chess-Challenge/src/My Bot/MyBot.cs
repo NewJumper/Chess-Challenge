@@ -14,7 +14,7 @@ public class MyBot : IChessBot {
             // make a move, if that move improves eval: confirm move
             board.MakeMove(possibleMove);
             float eval = Evaluation(board, !board.IsWhiteToMove); // get board evaluation after bot makes the possible move (it is techinically opponents turn right now, thats why we undo the move later)
-            Console.WriteLine(eval + " ? " + boardEval);
+            // Console.WriteLine(eval + " ? " + boardEval);
             if (eval > boardEval) {
                 boardEval = eval;
                 move = possibleMove;
@@ -22,11 +22,11 @@ public class MyBot : IChessBot {
             board.UndoMove(possibleMove);
         }
 
-        Console.WriteLine(move);
+        /*Console.WriteLine(move);
         Console.WriteLine("previous: " + Evaluation(board, board.IsWhiteToMove));
         board.MakeMove(move);
         Console.WriteLine("current: " + Evaluation(board, board.IsWhiteToMove));
-        board.UndoMove(move);
+        board.UndoMove(move);*/
 
         return move;
     }
@@ -37,11 +37,6 @@ public class MyBot : IChessBot {
         for (int i = 0; i < 64; i++) {
             int pieceType = (int) GetPiece(board, i).PieceType;
             int value = pieceValues[pieceType];
-            if (white) {
-                if (pieceType == 1) value *= byte.Parse(pawnPoints[i] + "");
-            } else {
-                if (pieceType == 1) value *= byte.Parse(pawnPoints[63 - i] + "");
-            }
             if (GetPiece(board, i).IsWhite) evaluation += value;
             else evaluation -= value;
         }
