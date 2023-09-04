@@ -5,27 +5,32 @@ using ChessChallenge.API;
 public class MyBot : IChessBot {
     public static string pawnPoints = "0000000045500554421331243336633344577544556886559999999999999999";
     int[] pieceValues = { 0, 1, 3, 3, 5, 9, 20 };
-    List<Move> moves = new(3);
+    List<Move> moves = new(1);
 
     public Move Think(Board board, Timer timer) {
         minMax(board, 3, int.MinValue, int.MaxValue, board.IsWhiteToMove);
 
-        foreach(Move move1 in moves) {
-            Console.Write(move1.ToString().Replace("Move: ", "") + ", ");
+        foreach (Move move in moves) {
+            Console.Write(move.ToString().Replace("Move: ", ", "));
         }
 
         return moves[0];
     }
 
     int minMax(Board board, int depth, int min, int max, bool white) {
-        if(depth == 0 || board.IsInCheckmate()) return Evaluation(board);
+        if (depth == 0 || board.IsInCheckmate()) return Evaluation(board);
 
-        Move move = new();
+        Move move = Move.NullMove;
         int eval = white ? int.MinValue : int.MaxValue;
         foreach (Move possibleMove in board.GetLegalMoves()) {
             board.MakeMove(possibleMove);
-            int newEval = minMax(board, depth - 1, min, max, !white);
+            if (board.IsDraw()) {
+                if (move == Move.NullMove) move = possibleMove;
+                board.UndoMove(possibleMove);
+                break;
+            }
 
+            int newEval = minMax(board, depth - 1, min, max, !white);
             if (white && newEval > eval) {
                 eval = newEval;
                 move = possibleMove;
@@ -42,7 +47,7 @@ public class MyBot : IChessBot {
             if (max <= min) break;
         }
 
-        moves.Add(move);
+        moves.Insert(0, move);
         return eval;
     }
 
